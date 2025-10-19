@@ -77,36 +77,35 @@ The `web-worker/` interface (Beacon) now includes enterprise-grade usability con
 - Compact adjustments: Smaller paddings, reduced input heights, hidden decorative glows for maximum viewport utilization.
 
 ### Advanced Fields Collapse
-### Layout & Spacing
-The interface now operates in a single optimized compact mode. All previous density and advanced toggles have been removed to eliminate wasted vertical space and ensure a consistent productivity layout.
+- Button: "Hide Advanced" / "Show Advanced" collapses CC, BCC, and Scheduling fields.
+- Persistence: Visibility stored in `localStorage` key `beacon_advanced_visible` (values `1` or `0`).
+- Accessibility: Uses `aria-expanded` and `aria-controls` on the toggle; collapsed container removed from reading order via `display:none`.
 
-Key characteristics of the compact baseline:
-- Tight vertical rhythm (minimal spacing between form groups)
-- Reduced padding inside panels while preserving readability
-- CC, BCC, and Scheduling fields always visible (no hidden state)
-- Action buttons aligned without oversized gaps or decorative transforms
-- Modals are hidden by default (`display:none`) and only rendered when active, preventing layout shifts
+### Scrolling & Layout Corrections
+- Removed forced `overflow:hidden` on `html`, `body`, `.surface`, and grid wrapper to prevent content clipping.
+- Enabled natural vertical scroll while maintaining fixed star-field background visuals.
+- Grid column width reduced (320px → 300px standard, 260px in compact) to surface more compose content.
 
-### Usage
-1. Open `/web-worker/index.html` in a modern browser.
-2. Fill sender and recipient fields (CC/BCC optional but always present for rapid access).
-3. Attach files, compose plaintext and HTML bodies, then send or schedule.
+### Layout & Spacing (Single Compact Baseline)
+Beacon now ships a single, optimized compact layout as the default baseline. All previous density and advanced field toggles were removed to eliminate wasted vertical space and cognitive friction. CC, BCC, and scheduling fields are always visible for immediate access.
 
-### Design Rationale
-Removing multiple density profiles and collapsible advanced sections prevents inconsistent experiences and reduces cognitive overhead. The single compact baseline:
-- Improves scan efficiency for power users
-- Prevents clipped or off‑screen controls on smaller viewports
-- Simplifies maintenance (no branching CSS or preference persistence)
-- Eliminates redundant animation & hover elevation for a stable enterprise feel
+Key characteristics:
+- Tight, consistent vertical rhythm (4–8px scale) with reduced padding.
+- No hover lifts or ornamental glows that create layout jitter.
+- Scrollable surface without clipping on smaller viewports.
+- Unified action bar aligned right with wrap support on narrow widths.
+- Modals are fully detached overlays (`hidden` + `aria-hidden` when inactive).
 
-### Accessibility
-- All interactive elements maintain focus outlines and sufficient hit areas despite reduced spacing.
-- Modals use overlay layering and are removed from the reading order until activated.
+Rationale:
+- Predictable form scanning for high-frequency enterprise usage.
+- Lower visual noise; focus on input content, not chrome.
+- Simplified code (removed density preference & advanced visibility persistence logic).
+- Reduced maintenance: single style path, fewer conditional branches.
 
-### Future Considerations
-- Inline template previews in a side drawer (optional enhancement)
-- Keyboard shortcuts for rapid scheduling presets
-- Minimal responsive adjustments for ultra‑narrow mobile widths
+Future enhancements under consideration (non-breaking):
+- Keyboard shortcuts for history toggle and template actions.
+- Optional minimal subject length indicator heuristics.
+- Progressive enhancement for HTML editor toolbar accessibility.
 
 ## License
 Internal / Proprietary (add a LICENSE file if distribution is intended).
