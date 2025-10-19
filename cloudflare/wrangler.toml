@@ -1,0 +1,26 @@
+name = "smtp2go-sender-pro"
+main = "src/worker.js"
+compatibility_date = "2025-10-06"
+
+# Define KV / Durable Objects bindings after provisioning
+[vars]
+SMTP2GO_API_URL = "https://api.smtp2go.com/v3"
+# Regional ZeptoMail base (adjust if your account is in another region, e.g. https://api.zeptomail.in)
+ZEPTOMAIL_API_URL = "https://api.zeptomail.com"
+DEFAULT_SENDER_EMAIL = "sender@example.com"
+DEFAULT_SENDER_NAME = "Sender"
+# Restrict CORS (comma separated). Set to your Pages domain in production.
+ALLOWED_ORIGINS = "*"
+
+# Uncomment if using Durable Objects (we are defining below)
+[[durable_objects.bindings]]
+name = "JOB_STORE"
+class_name = "JobStore"
+
+[[migrations]]
+new_classes = ["JobStore"]
+
+# KV Namespace for attachments metadata (optional)
+# [[kv_namespaces]]
+# binding = "ATTACH_KV"
+# id = "<kv-id>"

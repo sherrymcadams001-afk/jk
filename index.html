@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Beacon - Enterprise email delivery platform">
+    <meta name="theme-color" content="#0a0e1a">
+    <title>Beacon — Enterprise Email Platform</title>
+    
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="star-field" id="star-field" aria-hidden="true"></div>
+    
+    <div class="container">
+        <header role="banner">
+            <div style="display: flex; align-items: center; gap: var(--space-3); justify-content: center;">
+                <i class="fas fa-satellite-dish" style="font-size: var(--text-3xl); color: var(--color-accent-primary);" aria-hidden="true"></i>
+                <h1>Beacon</h1>
+            </div>
+            <p class="subtitle">Enterprise Email Delivery Platform</p>
+        </header>
+        
+        <main class="surface" role="main">
+            <form id="email-form" novalidate>
+                <div class="beacon-layout">
+                    <!-- LEFT PANEL: Sender & Receiver -->
+                    <div class="beacon-left">
+                        <div class="beacon-section">
+                            <h3 class="beacon-section-title">
+                                <i class="fas fa-user-circle" aria-hidden="true"></i>
+                                Sender
+                            </h3>
+                            
+                            <div class="form-group">
+                                <label for="from-email">From Email</label>
+                                <input 
+                                    type="email" 
+                                    id="from-email" 
+                                    name="from_email" 
+                                    placeholder="sender@company.com"
+                                    aria-describedby="from-email-error">
+                                <span id="from-email-error" class="error-message" role="alert"></span>
+                                <span class="field-hint">Optional. Defaults to system sender.</span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="from-name">From Name</label>
+                                <input 
+                                    type="text" 
+                                    id="from-name" 
+                                    name="from_name" 
+                                    placeholder="Company Name">
+                                <span class="field-hint">Display name for sender</span>
+                            </div>
+                        </div>
+                        
+                        <div class="beacon-section">
+                            <h3 class="beacon-section-title">
+                                <i class="fas fa-inbox" aria-hidden="true"></i>
+                                Receiver
+                            </h3>
+                            
+                            <div class="form-group">
+                                <!DOCTYPE html>
+                                <html lang="en">
+                                <head>
+                                  <meta charset="UTF-8">
+                                  <meta name="viewport" content="width=device-width,initial-scale=1">
+                                  <title>Beacon – Redirecting…</title>
+                                  <meta http-equiv="refresh" content="0; url=/web-worker/index.html">
+                                  <style>
+                                    body {font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:#0a0e1a; color:#fff; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0;}
+                                    .notice {max-width:560px; padding:2rem 2.5rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:12px; backdrop-filter: blur(8px);} 
+                                    h1 {margin:0 0 0.75rem; font-size:1.75rem; letter-spacing:0.5px;}
+                                    p {line-height:1.5; margin:0 0 1rem;}
+                                    code {background:rgba(255,255,255,0.12); padding:2px 6px; border-radius:4px; font-size:0.85rem;}
+                                    a {color:#66b2ff; text-decoration:none;} a:hover {text-decoration:underline;}
+                                  </style>
+                                </head>
+                                <body>
+                                  <div class="notice" role="alert" aria-live="polite">
+                                    <h1>Beacon Single Source</h1>
+                                    <p>The legacy root <code>index.html</code> has been deprecated. You are being redirected to the canonical application interface located at <code>/web-worker/index.html</code>.</p>
+                                    <p>If redirection does not occur automatically, <a href="/web-worker/index.html">click here to continue</a>.</p>
+                                    <p style="font-size:0.75rem;opacity:0.75;">This stub remains to prevent stale copies and enforce a single source of truth for the Beacon UI.</p>
+                                  </div>
+                                </body>
+                                </html>
+                                    placeholder="Email subject line" 
+                                    required 
+                                    aria-required="true"
+                                    aria-describedby="subject-error">
+                                <span id="subject-error" class="error-message" role="alert"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);">
+                                    <label for="html-content" style="margin:0;">
+                                        Message <span class="required">*</span>
+                                    </label>
+                                    <div class="compose-mode-toggle" role="radiogroup" aria-label="Content Format">
+                                        <button type="button" class="mode-btn mode-active" role="radio" data-mode="html" aria-checked="true" aria-label="HTML mode">HTML</button>
+                                        <button type="button" class="mode-btn" role="radio" data-mode="plain" aria-checked="false" aria-label="Plain text mode">Plain</button>
+                                    </div>
+                                </div>
+                                <div class="editor-wrapper">
+                                    <!-- HTML Editor (contenteditable) -->
+                                    <div id="html-editor" class="html-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="<h1>Hello!</h1><p>Your HTML content here...</p>"></div>
+                                    <!-- Plain Text textarea (hidden by default) -->
+                                    <textarea id="plain-editor" class="plain-editor" name="plain_content" rows="12" placeholder="Hello! Your plain text content here..." aria-describedby="content-error" style="display:none;"></textarea>
+                                    <!-- Hidden textarea for form submission (populated from active editor) -->
+                                    <textarea id="html-content" name="html_content" hidden></textarea>
+                                </div>
+                                <span id="content-error" class="error-message" role="alert"></span>
+                                <span class="field-hint">Switch between HTML and Plain. Drafts persist per mode.</span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="attachments">
+                                    <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                    Attachments
+                                </label>
+                                <input 
+                                    type="file" 
+                                    id="attachments" 
+                                    name="attachments" 
+                                    multiple
+                                    aria-describedby="attachments-help">
+                                <span id="attachments-help" class="field-hint">
+                                    Max 5MB total • Multiple files supported
+                                </span>
+                            </div>
+                            
+                            <div class="beacon-actions" style="display:flex; gap: var(--space-3); align-items:center; flex-wrap:wrap;">
+                                <button type="submit" class="btn btn-primary" id="submit-btn">
+                                    <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                                    Send Email
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="clear-draft-btn" aria-label="Clear saved draft">
+                                    <i class="fas fa-eraser" aria-hidden="true"></i>
+                                    Clear Draft
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </main>
+        
+        <footer role="contentinfo">
+            <p>Beacon © <span id="current-year"></span> • Enterprise Email Platform</p>
+        </footer>
+    </div>
+    
+    <div class="toast-container" id="toast-container" role="status" aria-live="polite"></div>
+    <script src="/static/app.js" defer></script>
+    <noscript><div style="color:#fff;text-align:center;padding:1rem;font-size:0.8rem;">JavaScript required for Beacon interface.</div></noscript>
+</body>
+</html>

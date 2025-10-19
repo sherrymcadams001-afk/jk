@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMTP2GO Sender Pro</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/static/style.css">
+
+    <script>
+        // Tailwind Config (colors, animations)
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#111827', darkcard: '#1f2937', darkborder: '#374151',
+                        darkaccent: '#3b82f6', darktext: '#d1d5db', darkplaceholder: '#6b7280',
+                        status_success_bg: '#166534', status_success_text: '#a7f3d0', status_success_border: '#22c55e',
+                        status_warning_bg: '#854d0e', status_warning_text: '#fef08a', status_warning_border: '#eab308', // Darker yellow BG
+                        status_error_bg: '#991b1b', status_error_text: '#fecaca', status_error_border: '#ef4444',
+                        status_info_bg: '#1e3a8a', status_info_text: '#bfdbfe', status_info_border: '#3b82f6',
+                    },
+                    animation: {
+                        'twinkle': 'twinkle 4s ease-in-out infinite alternate',
+                        'pulse-slow': 'pulse 2.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.6s ease-out forwards',
+                    },
+                    keyframes: {
+                        twinkle: { '0%, 100%': { opacity: 0.2 }, '50%': { opacity: 0.9 } },
+                        pulse: { '0%, 100%': { opacity: 1 }, '50%': { opacity: .4 } },
+                        fadeIn: { 'from': { opacity: 0, transform: 'translateY(10px)' }, 'to': { opacity: 1, transform: 'translateY(0)' } }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-darkbg text-darktext min-h-screen font-sans antialiased">
+    <!-- Star background -->
+    <div id="stars-container" aria-hidden="true"></div>
+
+    <div class="container mx-auto px-4 py-8 max-w-6xl relative z-10 fade-in">
+        <!-- Header -->
+        <header class="mb-10 text-center md:text-left">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-2">
+                <div class="flex items-center space-x-3">
+                     <i class="fas fa-rocket text-3xl text-darkaccent"></i>
+                            <h1 class="text-3xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                                SMTP2GO Sender Pro
+                            </h1>
+                </div>
+                <div class="text-xs text-gray-500 mt-2 md:mt-0">Powered by SMTP2GO API</div>
+            </div>
+            <p class="text-gray-400 mt-1 text-center md:text-left">Streamlined Email Delivery Platform</p>
+        </header>
+
+        <!-- Main Content Card -->
+        <main class="bg-darkcard rounded-lg shadow-xl border border-darkborder overflow-hidden"> <!-- Added overflow-hidden -->
+            <!-- Tabs Container -->
+            <div class="flex tab-container mb-6 md:mb-8 px-4 md:px-8 pt-4 md:pt-6"> <!-- Adjusted padding -->
+                <button id="single-tab" class="tab-button active" role="tab" aria-controls="single-email-panel" aria-selected="true">
+                    <i class="fas fa-envelope mr-2" aria-hidden="true"></i>Single Send
+                </button>
+                <div class="flex-grow border-b-4 border-transparent"></div>
+            </div>
+
+            <!-- Panels Container -->
+             <div class="p-6 md:p-8 pt-0 md:pt-2"> <!-- Container for panels with padding -->
+
+                <!-- Single Email Panel -->
+                <section id="single-email-panel" role="tabpanel" aria-labelledby="single-tab">
+                    <form id="single-email-form" class="space-y-8"> <!-- Increased base spacing -->
+                        <p class="text-sm text-gray-400 -mt-2 mb-4">Compose and send an individual email. Fields marked with * are required.</p>
+                        <!-- Refined Grid Layout -->
+                        <div class="form-grid">
+                            <!-- Left Column -->
+                            <div class="form-column">
+                                <div>
+                                    <label for="to-email" class="block text-sm font-medium text-gray-300 mb-1">To Email *</label>
+                                    <input type="email" id="to-email" name="to_email" placeholder="recipient@example.com" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-darkborder rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-darkaccent focus:border-darkaccent text-white placeholder-darkplaceholder" required aria-required="true">
+                                </div>
+                                <div>
+                                    <label for="to-name" class="block text-sm font-medium text-gray-300 mb-1">Recipient Name</label>
+                                    <input type="text" id="to-name" name="to_name" placeholder="Optional: e.g., John Doe" aria-describedby="to-name-desc" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-darkborder rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-darkaccent focus:border-darkaccent text-white placeholder-darkplaceholder">
+                                     <p id="to-name-desc" class="mt-1 text-xs text-gray-500">Optional. Used for personalization in some systems.</p>
+                                </div>
+                                 <div>
+                                    <label for="from-email" class="block text-sm font-medium text-gray-300 mb-1">From Email</label>
+                                    <input type="email" id="from-email" name="from_email" placeholder="Defaults to system sender" aria-describedby="from-email-desc" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-darkborder rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-darkaccent focus:border-darkaccent text-white placeholder-darkplaceholder">
+                                    <p id="from-email-desc" class="mt-1 text-xs text-gray-500">Optional. Must be a verified sender address.</p>
+                                </div>
+                                <div>
+                                    <label for="from-name" class="block text-sm font-medium text-gray-300 mb-1">From Name</label>
+                                    <input type="text" id="from-name" name="from_name" placeholder="Defaults to system sender name" aria-describedby="from-name-desc" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-darkborder rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-darkaccent focus:border-darkaccent text-white placeholder-darkplaceholder">
+                                    <p id="from-name-desc" class="mt-1 text-xs text-gray-500">Optional. Display name for the sender.</p>
+                                </div>
+                            </div>
+                            <!-- Right Column -->
+                            <div class="form-column">
+                                <div>
+                                    <label for="subject" class="block text-sm font-medium text-gray-300 mb-1">Subject *</label>
+                                    <input type="text" id="subject" name="subject" placeholder="Your Email Subject Line" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-darkborder rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-darkaccent focus:border-darkaccent text-white placeholder-darkplaceholder" required aria-required="true">
+                                </div>
+                                <div>
+                                    <label for="cc" class="block text-sm font-medium text-gray-300 mb-1">CC</label>
+                                    <input type="text" id="cc" name="cc" placeholder="Optional: comma-separated emails" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-darkborder rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-darkaccent focus:border-darkaccent text-white placeholder-darkplaceholder">
+                                </div>
+                                <div>
+                                    <!-- Single Email Panel -->
+                                    <section id="single-email-panel" role="tabpanel" aria-labelledby="single-tab">
+                                        <form id="single-email-form" class="space-y-8"> <!-- Increased base spacing -->
+                                            <p class="text-sm text-gray-400 -mt-2 mb-4">Compose and send an individual email. Fields marked with * are required.</p>
+                                            <!-- Refined Grid Layout -->
+                                            <div class="form-grid">
+                                                <!-- Left Column -->
+                                                <div class="form-column">
+                                                    <div>
+                                                        <label for="to-email" class="block text-sm font-medium text-gray-300 mb-1">To Email *</label>
+                                                        <input type="email" id="to-email" name="to_email" placeholder="recipient@example.com" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-darkborder rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-darkaccent focus:border-darkaccent text-white placeholder-darkplaceholder" required aria-required="true">
+                                                    </div>
+                                                    <div>
+                                                        <label for="to-name" class="block text-sm font-medium text-gray-300 mb-1">Recipient Name</label>
+                                                        <input type="text" id="to-name" name="to_name" placeholder="Optional: e.g., John Doe" aria-describedby="to-name-desc" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-darkborder rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-darkaccent focus:border-darkaccent text-white placeholder-darkplaceholder">
+                                                         <p id="to-name-desc" class="mt-1 text-xs text-gray-500">Optional. Used for personalization in some systems.</p>
+                                                    </div>
+                                                     <div>
+                                                        <label for="from-email" class="block text-sm font-medium text-gray-300 mb-1">From Email</label>
+                                                        <input type="email" id="from-email" name="from_email" placeholder="Defaults to system sender" aria-describedby="from-email-desc" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-darkborder rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-darkaccent focus:border-darkaccent text-white placeholder-darkplaceholder">
+                                                        <p id="from-email-desc" class="mt-1 text-xs text-gray-500">Optional. Must be a verified sender address.</p>
+                                                    </div>
+                                                    <div>
+                                                        <label for="from-name" class="block text-sm font-medium text-gray-300 mb-1">From Name</label>
+                                                        <input type="text" id="from-name" name="from_name" placeholder="Defaults to system sender name" aria-describedby="from-name-desc" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-darkborder rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-darkaccent focus:border-darkaccent text-white placeholder-darkplaceholder">
+                                                        <p id="from-name-desc" class="mt-1 text-xs text-gray-500">Optional. Display name for the sender.</p>
+                                                    </div>
+                                                </div>
+                                                <!-- Right Column -->
+                                                <div class="form-column">
+                                                    <div>
+                                                        <label for="subject" class="block text-sm font-medium text-gray-300 mb-1">Subject *</label>
+                                                        <input type="text" id="subject" name="subject" placeholder="Your Email Subject Line" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-darkborder rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-darkaccent focus:border-darkaccent text-white placeholder-darkplaceholder" required aria-required="true">
+                                                    </div>
+                                                    <div>
+                                                        <label for="cc" class="block text-sm font-medium text-gray-300 mb-1">CC</label>
+                                                        <input type="text" id="cc" name="cc" placeholder="Optional: comma-separated emails" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-darkborder rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-darkaccent focus:border-darkaccent text-white placeholder-darkplaceholder">
+                                                    </div>
+                                                    <div>
+                                                        <label for="bcc" class="block text-sm font-medium text-gray-300 mb-1">BCC</label>
+                                                        <input type="text" id="bcc" name="bcc" placeholder="Optional: comma-separated emails" class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-darkborder rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-darkaccent focus:border-darkaccent text-white placeholder-darkplaceholder">
+                                                    </div>
+                                                    <div>
+                                                        <label for="single-attachments" class="block text-sm font-medium text-gray-300 mb-1">Attachments</label>
+                                                        <input type="file" id="single-attachments" name="attachments" multiple
+                                                               class="mt-1 block w-full text-sm text-gray-400 file:px-3 file:py-1.5 file:mr-3 file:text-sm file:font-medium file:bg-gray-600 file:text-darkaccent file:border file:border-gray-500 file:rounded-md file:cursor-pointer file:hover:bg-gray-500 file:hover:text-blue-300 file:transition-colors file:focus:outline-none file:focus:ring-2 file:focus:ring-darkaccent file:focus:ring-offset-2 file:focus:ring-offset-darkcard file:border-none file:bg-transparent"/>
+                                                        <p class="mt-1 text-xs text-gray-500">Optional. You can select multiple files.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Email Content -->
+                                            <div>
+                                                <label for="content" class="block text-sm font-medium text-gray-300 mb-1">Email Content (HTML) *</label>
+                                                <textarea id="content" name="html_content" rows="10" placeholder="Enter your HTML email content here. Use standard HTML tags." class="mt-1 block w-full px-3 py-2 bg-gray-700 border border-darkborder rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-darkaccent focus:border-darkaccent text-white placeholder-darkplaceholder" required aria-required="true"></textarea>
+                                            </div>
+                                            <!-- Send Button -->
+                                            <div class="flex justify-end pt-4 border-t border-darkborder">
+                                                <button type="button" id="send-single-email" class="inline-flex items-center px-6 py-2.5 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-darkaccent hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-darkcard focus:ring-blue-500 glow-on-hover disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-500">
+                                                    <i class="fas fa-paper-plane mr-2"></i> Send Email
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </section>

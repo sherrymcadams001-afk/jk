@@ -1,0 +1,10 @@
+{
+    "api_key": "api-7EE93BBB8F154775AB2D6A7AABD2BFF4",
+    "to": [
+        "test-10kwbm9cj@srv1.mail-tester.com"
+    ],
+    "sender": "recipient@ginkgobioworks.us",
+    "subject": "This is a cURL Test from a JSON file",
+    "html_body": "<html><body><h1>Hello from a JSON file!</h1><p>This email was sent by loading data from a file, which avoids CMD errors.</p></body></html>",
+    "text_body": "Hello from a JSON file! This email was sent by loading data from a file, which avoids CMD errors."
+}
