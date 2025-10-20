@@ -57,37 +57,31 @@
                                 Receiver
                             </h3>
                             
-                            <div class="form-group">
-                                <!DOCTYPE html>
-                                <html lang="en">
-                                <head>
-                                  <meta charset="UTF-8">
-                                  <meta name="viewport" content="width=device-width,initial-scale=1">
-                                  <title>Beacon – Redirecting…</title>
-                                  <meta http-equiv="refresh" content="0; url=/web-worker/index.html">
-                                  <style>
-                                    body {font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:#0a0e1a; color:#fff; display:flex; align-items:center; justify-content:center; min-height:100vh; margin:0;}
-                                    .notice {max-width:560px; padding:2rem 2.5rem; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); border-radius:12px; backdrop-filter: blur(8px);} 
-                                    h1 {margin:0 0 0.75rem; font-size:1.75rem; letter-spacing:0.5px;}
-                                    p {line-height:1.5; margin:0 0 1rem;}
-                                    code {background:rgba(255,255,255,0.12); padding:2px 6px; border-radius:4px; font-size:0.85rem;}
-                                    a {color:#66b2ff; text-decoration:none;} a:hover {text-decoration:underline;}
-                                  </style>
-                                </head>
-                                <body>
-                                  <div class="notice" role="alert" aria-live="polite">
-                                    <h1>Beacon Single Source</h1>
-                                    <p>The legacy root <code>index.html</code> has been deprecated. You are being redirected to the canonical application interface located at <code>/web-worker/index.html</code>.</p>
-                                    <p>If redirection does not occur automatically, <a href="/web-worker/index.html">click here to continue</a>.</p>
-                                    <p style="font-size:0.75rem;opacity:0.75;">This stub remains to prevent stale copies and enforce a single source of truth for the Beacon UI.</p>
-                                  </div>
-                                </body>
-                                </html>
-                                    placeholder="Email subject line" 
-                                    required 
-                                    aria-required="true"
-                                    aria-describedby="subject-error">
+                                                        <div class="form-group">
+                                                                <input 
+                                                                        type="text"
+                                                                        id="subject"
+                                                                        name="subject"
+                                                                        placeholder="Email subject line"
+                                                                        required
+                                                                        aria-required="true"
+                                                                        aria-describedby="subject-error">
                                 <span id="subject-error" class="error-message" role="alert"></span>
+                            </div>
+                            <!-- Scheduling Controls -->
+                            <div class="form-group" id="schedule-group">
+                                <label for="schedule-datetime">
+                                    <i class="fas fa-clock" aria-hidden="true"></i> Schedule Send
+                                </label>
+                                <input type="datetime-local" id="schedule-datetime" name="schedule_at" aria-describedby="schedule-help">
+                                <span id="schedule-help" class="field-hint">Optional. Leave empty to send immediately.</span>
+                                <div class="schedule-presets" aria-label="Quick schedule presets">
+                                    <button type="button" class="preset-btn" data-offset="5m">+5m</button>
+                                    <button type="button" class="preset-btn" data-offset="15m">+15m</button>
+                                    <button type="button" class="preset-btn" data-offset="1h">+1h</button>
+                                    <button type="button" class="preset-btn" data-offset="4h">+4h</button>
+                                    <button type="button" class="preset-btn" data-offset="1d">+1d</button>
+                                </div>
                             </div>
                             
                             <div class="form-group">

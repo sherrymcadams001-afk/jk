@@ -224,7 +224,7 @@ h1::after {
 
 .beacon-layout {
   display: grid;
-  grid-template-columns: 380px minmax(0,1fr); /* widened left panel for better balance */
+  grid-template-columns: 320px minmax(0,1fr); /* compact left panel */
   gap: var(--space-4);
   min-height: auto;
 }
@@ -265,7 +265,15 @@ h1::after {
 
 /* Constrain compose section internal width for readability on ultra-wide */
 .beacon-right .beacon-section {
-  max-width: 1000px;
+  max-width: 820px; /* tighter reading width */
+}
+
+@media (max-width: 1400px) {
+  .beacon-right .beacon-section { max-width: 760px; }
+}
+@media (max-width: 1100px) {
+  .beacon-layout { grid-template-columns: 100%; }
+  .beacon-right .beacon-section { max-width: 100%; }
 }
 
 /* Removed internal scrolling for compact desktop layout */
@@ -274,6 +282,22 @@ h1::after {
 .history-item .countdown-badge { background: var(--color-accent-primary); color:#fff; font-size: var(--text-xs); padding:2px 6px; border-radius:999px; margin-left:.5rem; box-shadow: var(--shadow-sm); letter-spacing:.5px; display:inline-block; }
 .history-item .countdown-badge.warning { background: var(--color-warning); }
 .history-item .countdown-badge.due { background: var(--color-success); }
+
+/* Scheduling controls */
+#schedule-group { margin-top: var(--space-4); }
+#schedule-group input[type="datetime-local"] {
+  background: var(--color-surface-base);
+  border: 1px solid var(--color-border-default);
+  color: var(--color-text-primary);
+  padding: .55rem .65rem;
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+}
+#schedule-group input[type="datetime-local"]:focus { outline:2px solid var(--color-accent-primary); outline-offset:2px; border-color: var(--color-accent-primary); }
+.schedule-presets { display:flex; gap:.5rem; margin-top:.5rem; flex-wrap:wrap; }
+.preset-btn { background: var(--color-surface-alt); border:1px solid var(--color-border-default); padding:.4rem .65rem; font-size: var(--text-xs); border-radius: var(--radius-full); cursor:pointer; transition: background .2s, border-color .2s; }
+.preset-btn:hover { background: var(--color-accent-primary); color:#fff; border-color: var(--color-accent-primary); }
+.preset-btn:focus-visible { outline:2px solid #fff; outline-offset:2px; }
 
 /* Visually hidden utility */
 .visually-hidden { position:absolute !important; width:1px !important; height:1px !important; padding:0 !important; margin:-1px !important; overflow:hidden !important; clip:rect(0 0 0 0) !important; clip-path:inset(50%) !important; border:0 !important; white-space:nowrap !important; }

@@ -40,11 +40,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Initial Setup ---
     if (!validateElements()) return;
-    setupEventListeners();
-    switchTab('single');
-    createStarBackground();
-    updateFooterYear();
-    handleIntervalChange();
+  setupEventListeners();
+  switchTab('single');
+  createStarBackground();
+  updateFooterYear();
+  handleIntervalChange();
+  loadScheduledFromStorage();
+  renderHistorySidebar();
 
     // --- Element Validation ---
     function validateElements() {
@@ -64,17 +66,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // --- Event Listeners Setup ---
     function setupEventListeners() {
         elements.singleTab?.addEventListener('click', () => switchTab('single'));
-        // Clean merged app.js - core functionality only
-        document.addEventListener('DOMContentLoaded', () => {
-          // --- State ---
-          let uploadedRecipients = [];
-          let bulkSendJobId = null;
-          let statusPollInterval = null;
-          const MAX_DISPLAY_FAILED_EMAILS = 100;
-          window.beaconState = window.beaconState || { scheduled: [], history: [] };
+        elements.bulkTab?.addEventListener('click', () => switchTab('bulk'));
+        elements.intervalSlider?.addEventListener('input', handleIntervalChange);
+        elements.fileUploadInput?.addEventListener('change', handleFileUpload);
+        elements.fileUploadArea?.addEventListener('click', () => elements.fileUploadInput?.click());
+        elements.fileUploadArea?.addEventListener('keydown', (e) => { if(['Enter',' '].includes(e.key)){ e.preventDefault(); elements.fileUploadInput?.click(); }});
+        elements.clearFileButton?.addEventListener('click', () => resetFileUploadUI());
+        elements.sendSingleEmailButton?.addEventListener('click', handleSendSingleEmail);
+        elements.sendBulkEmailButton?.addEventListener('click', handleSendBulkEmail);
+        elements.toggleFailedListButton?.addEventListener('click', toggleFailedEmailsList);
+        elements.singleForm?.addEventListener('submit', e => e.preventDefault());
+        elements.bulkForm?.addEventListener('submit', e => e.preventDefault());
+        window.addEventListener('resize', debounce(createStarBackground, 300));
+        // Scheduling preset buttons
+        document.querySelectorAll('.preset-btn').forEach(btn => btn.addEventListener('click', () => applySchedulePreset(btn.dataset.offset)));
 
-          // --- Element cache ---
-          const el = (id) => document.getElementById(id);
+        const el = (id) => document.getElementById(id);
           const E = {
             singleTab: el('tab-single'), bulkTab: el('tab-bulk'),
             singlePanel: el('panel-single'), bulkPanel: el('panel-bulk'),
@@ -91,13 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
             historySidebar: el('history-sidebar')
           };
 
-          if (!validateEssential()) return;
-          attachListeners();
-          switchTab('single');
-          updateYear();
-          handleIntervalChange();
-          createStarBackground();
-          renderHistorySidebar();
+          window.beaconState = window.beaconState || { scheduled: [], history: [] };
 
           // --- Validation ---
           function validateEssential() {
@@ -110,22 +111,6 @@ document.addEventListener('DOMContentLoaded', function() {
           }
 
           // --- Listeners ---
-          function attachListeners() {
-            E.singleTab.addEventListener('click', () => switchTab('single'));
-            E.bulkTab.addEventListener('click', () => switchTab('bulk'));
-            E.intervalSlider?.addEventListener('input', handleIntervalChange);
-            E.fileInput?.addEventListener('change', handleFileUpload);
-            E.fileArea?.addEventListener('click', () => E.fileInput?.click());
-            E.fileArea?.addEventListener('keydown', e => { if(['Enter',' '].includes(e.key)){ e.preventDefault(); E.fileInput?.click(); }});
-            E.clearFileBtn?.addEventListener('click', () => resetFileUploadUI());
-            E.sendSingleBtn.addEventListener('click', handleSendSingleEmail);
-            E.sendBulkBtn.addEventListener('click', handleSendBulkEmail);
-            E.failedToggle?.addEventListener('click', toggleFailedList);
-            E.singleForm.addEventListener('submit', e => e.preventDefault());
-            E.bulkForm.addEventListener('submit', e => e.preventDefault());
-            window.addEventListener('resize', debounce(createStarBackground, 300));
-          }
-
           function debounce(fn, wait){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),wait); }; }
 
           // --- Tabs ---
@@ -149,6 +134,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(E.singleForm);
             if (!formData.get('to_email')) { showStatusMessage('Recipient email required','error'); return; }
             if (!formData.get('subject')) { showStatusMessage('Subject required','error'); return; }
+            // Scheduling
+            const scheduleAt = document.getElementById('schedule-datetime')?.value;
+            if (scheduleAt) {
+              const when = new Date(scheduleAt).getTime();
+              if (!isNaN(when) && when > Date.now() + 5000) { // require at least 5s future
+                enqueueScheduled({ id: Date.now().toString(36), to: formData.get('to_email'), subject: formData.get('subject'), provider: 'smtp2go', scheduledAt: when, status:'scheduled' });
+                showStatusMessage('Email scheduled.', 'success');
+                renderHistorySidebar();
+                return; // do not send immediately
+              } else {
+                showStatusMessage('Invalid schedule time (must be >5s future). Sending now.', 'warning');
+              }
+            }
             setButtonLoading(E.sendSingleBtn,true,'Sending...');
             try {
               const res = await fetch('/api/send-email',{method:'POST',body:formData});
@@ -191,6 +189,44 @@ document.addEventListener('DOMContentLoaded', function() {
           }
 
           function resetFileUploadUI(clear=true){ if(clear && E.fileInput) E.fileInput.value=''; }
+
+          // --- Scheduling Helpers ---
+          function enqueueScheduled(item){
+            window.beaconState.scheduled.push(item);
+            persistScheduled();
+          }
+          function persistScheduled(){
+            try { localStorage.setItem('beacon_scheduled', JSON.stringify(window.beaconState.scheduled)); } catch(e){ console.warn('Persist scheduled failed',e); }
+          }
+          function loadScheduledFromStorage(){
+            try { const raw = localStorage.getItem('beacon_scheduled'); if(raw){ window.beaconState.scheduled = JSON.parse(raw)||[]; } } catch(e){ console.warn('Load scheduled failed',e); }
+          }
+          function processScheduledQueue(){
+            const now = Date.now();
+            const due = window.beaconState.scheduled.filter(i=> i.scheduledAt <= now && i.status==='scheduled');
+            if(!due.length) return;
+            due.forEach(async item => {
+              // For now simulate immediate send success
+              item.status='sent'; item.sentAt=Date.now();
+              window.beaconState.history.unshift({ id:item.id, to:item.to, subject:item.subject, provider:item.provider, sentAt:item.sentAt, status:'sent' });
+            });
+            window.beaconState.scheduled = window.beaconState.scheduled.filter(i=> i.status==='scheduled');
+            persistScheduled();
+            renderHistorySidebar();
+          }
+          setInterval(processScheduledQueue, 5000);
+          function applySchedulePreset(offsetStr){
+            const input = document.getElementById('schedule-datetime'); if(!input) return;
+            const map = { m:60000, h:3600000, d:86400000 };
+            const match = offsetStr.match(/(\d+)([mhd])/); if(!match) return;
+            const amount = parseInt(match[1],10); const unitMs = map[match[2]]; const target = new Date(Date.now()+amount*unitMs);
+            // Format to yyyy-MM-ddTHH:MM
+            const pad = n => String(n).padStart(2,'0');
+            const val = `${target.getFullYear()}-${pad(target.getMonth()+1)}-${pad(target.getDate())}T${pad(target.getHours())}:${pad(target.getMinutes())}`;
+            input.value = val;
+            input.dispatchEvent(new Event('change'));
+            showStatusMessage(`Scheduled for ${target.toLocaleString()}`,'info');
+          }
 
           // --- Bulk Send ---
           async function handleSendBulkEmail(){
@@ -318,6 +354,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
           function renderHistorySidebar(){
             const sidebar = E.historySidebar; if(!sidebar) return;
+            const scheduled = (window.beaconState.scheduled||[]).sort((a,b)=>a.scheduledAt-b.scheduledAt).map(s=>{
+              const diff = Math.max(s.scheduledAt - Date.now(),0); const badge = formatCountdownBadge(Math.round(diff/1000));
+              return `<div class="history-item scheduled"><div class="history-item-main"><span class="hist-subject">${escapeHTML(s.subject||'')}</span><span class="hist-to">→ ${escapeHTML(s.to||'')}</span>${badge}</div><div class="history-item-meta">${formatRelative(s.scheduledAt)} • ${s.provider||'smtp2go'}</div><div class="history-item-status">${s.status}</div></div>`;
+            }).join('') || '<div class="history-empty">No scheduled emails</div>';
             const hist = window.beaconState.history || [];
             const recent = hist.slice(0,25).map(h=>`
               <div class="history-item ${h.status}">
@@ -325,10 +365,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="history-item-meta">${formatRelative(h.sentAt)} • ${h.provider||'smtp2go'}</div>
                 <div class="history-item-status">${h.status}</div>
               </div>`).join('') || '<div class="history-empty">No sent emails yet</div>';
-            sidebar.innerHTML = `<div class="history-section"><h3>Recent Sent</h3>${recent}</div>`;
+            sidebar.innerHTML = `<div class="history-section"><h3>Scheduled</h3>${scheduled}</div><div class="history-section"><h3>Recent Sent</h3>${recent}</div>`;
           }
 
-          function formatRelative(ts){ if(!ts) return '—'; const diff=Date.now()-ts; const m=Math.round(diff/60000); if(m<1)return'just now'; if(m<60)return `${m}m ago`; const h=Math.round(m/60); if(h<24) return `${h}h ago`; const d=Math.round(h/24); return `${d}d ago`; }
+          function formatRelative(ts){ if(!ts) return '—'; const diff=Date.now()-ts; const m=Math.round(diff/60000); if(m<1)return'just now'; if(m<60)return `${m}m`; const h=Math.round(m/60); if(h<24) return `${h}h`; const d=Math.round(h/24); return `${d}d`; }
+          function formatCountdownBadge(seconds){ let label, cls='countdown-badge'; if(seconds<=0){label='due'; cls+=' due';} else if(seconds<60){label=`${seconds}s`; cls+=' warning';} else if(seconds<3600){label=`${Math.ceil(seconds/60)}m`; } else {label=`${Math.ceil(seconds/3600)}h`; } return `<span class="${cls}" aria-label="Scheduled send in ${readableCountdown(seconds)}">${label}</span>`; }
+          function readableCountdown(seconds){ if(seconds<=0) return 'now'; if(seconds<60) return seconds+' seconds'; if(seconds<3600) return Math.ceil(seconds/60)+' minutes'; return Math.ceil(seconds/3600)+' hours'; }
           function escapeHTML(s){ return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
 
           // --- Status Messages ---
@@ -359,8 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
           // --- Visual ---
           function createStarBackground(){ const c=document.getElementById('stars-container'); if(!c) return; const w=c.clientWidth,h=c.clientHeight; const density=0.00008; const count=Math.min(Math.floor(w*h*density),250); const frag=document.createDocumentFragment(); for(let i=0;i<count;i++){ const s=document.createElement('div'); s.className='star'; const left=Math.random()*w, top=Math.random()*h, size=1+Math.random()*1.5, delay=Math.random()*10, dur=4+Math.random()*6; s.style.cssText=`left:${left}px;top:${top}px;width:${size}px;height:${size}px;animation:twinkle ${dur}s ease-in-out infinite alternate ${delay}s;`; frag.appendChild(s);} c.innerHTML=''; c.appendChild(frag);}  
 
-          function updateYear(){ if(E.year) E.year.textContent=new Date().getFullYear(); }
-        });
+      function updateYear(){ if(E.year) E.year.textContent=new Date().getFullYear(); }
     }
 
     // --- Progress Polling & UI Update ---
