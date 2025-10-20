@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+        <!-- History Sidebar -->
+        <aside id="history-sidebar" class="history-sidebar" role="complementary" aria-label="Email history" hidden>
+            <div class="history-sidebar-header">
+                <h2><i class="fas fa-clock" aria-hidden="true"></i> Activity</h2>
+                <button type="button" id="history-close" class="secondary-btn" aria-label="Close history">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="history-sidebar-content" id="history-content"><!-- Dynamic history list --></div>
+            <div class="history-sidebar-footer">
+                <button type="button" id="history-clear" class="secondary-btn" aria-label="Clear sent history">
+                    <i class="fas fa-trash" aria-hidden="true"></i> Clear Sent
+                </button>
+            </div>
+        </aside>
+        <footer role="contentinfo">
+            <p>Beacon © <span id="current-year"></span> • Enterprise Email Platform</p>
+        </footer>
+    </div>
+
+                                    name="from_email" 
+                                    placeholder="sender@company.com"
+                                    aria-describedby="from-email-error">
+                                <span id="from-email-error" class="error-message" role="alert"></span>
+                                <span class="field-hint">Optional. Defaults to system sender.</span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="from-name">From Name</label>
+                                <input 
+                                    type="text" 
+                                    id="from-name" 
+                                    name="from_name" 
+                                    placeholder="Company Name">
+                                <span class="field-hint">Display name for sender</span>
+                            </div>
+                        </div>
+                        
+                        <div class="beacon-section">
+                            <h3 class="beacon-section-title">
+                                <i class="fas fa-inbox" aria-hidden="true"></i>
+                                Receiver
+                            </h3>
+                            
+                                                        <div class="form-group">
+                                                                <input 
+                                                                        type="text"
+                                                                        id="subject"
+                                                                        name="subject"
+                                                                        placeholder="Email subject line"
+                                                                        required
+                                                                        aria-required="true"
+                                                                        aria-describedby="subject-error">
+                                <span id="subject-error" class="error-message" role="alert"></span>
+                            </div>
+                            <!-- Scheduling Controls -->
+                            <div class="form-group" id="schedule-group">
+                                <label for="schedule-datetime">
+                                    <i class="fas fa-clock" aria-hidden="true"></i> Schedule Send
+                                </label>
+                                <input type="datetime-local" id="schedule-datetime" name="schedule_at" aria-describedby="schedule-help">
+                                <span id="schedule-help" class="field-hint">Optional. Leave empty to send immediately.</span>
+                                <div class="schedule-presets" aria-label="Quick schedule presets">
+                                    <button type="button" class="preset-btn" data-offset="5m">+5m</button>
+                                    <button type="button" class="preset-btn" data-offset="15m">+15m</button>
+                                    <button type="button" class="preset-btn" data-offset="1h">+1h</button>
+                                    <button type="button" class="preset-btn" data-offset="4h">+4h</button>
+                                    <button type="button" class="preset-btn" data-offset="1d">+1d</button>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);">
+                                    <label for="html-content" style="margin:0;">
+                                        Message <span class="required">*</span>
+                                    </label>
+                                    <div class="compose-mode-toggle" role="radiogroup" aria-label="Content Format">
+                                        <button type="button" class="mode-btn mode-active" role="radio" data-mode="html" aria-checked="true" aria-label="HTML mode">HTML</button>
+                                        <button type="button" class="mode-btn" role="radio" data-mode="plain" aria-checked="false" aria-label="Plain text mode">Plain</button>
+                                    </div>
+                                </div>
+                                <div class="editor-wrapper">
+                                    <!-- HTML Editor (contenteditable) -->
+                                    <div id="html-editor" class="html-editor" contenteditable="true" role="textbox" aria-multiline="true" data-placeholder="<h1>Hello!</h1><p>Your HTML content here...</p>"></div>
+                                    <!-- Plain Text textarea (hidden by default) -->
+                                    <textarea id="plain-editor" class="plain-editor" name="plain_content" rows="12" placeholder="Hello! Your plain text content here..." aria-describedby="content-error" style="display:none;"></textarea>
+                                    <!-- Hidden textarea for form submission (populated from active editor) -->
+                                    <textarea id="html-content" name="html_content" hidden></textarea>
+                                </div>
+                                <span id="content-error" class="error-message" role="alert"></span>
+                                <span class="field-hint">Switch between HTML and Plain. Drafts persist per mode.</span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="attachments">
+                                    <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                    Attachments
+                                </label>
+                                <input 
+                                    type="file" 
+                                    id="attachments" 
+                                    name="attachments" 
+                                    multiple
+                                    aria-describedby="attachments-help">
+                                <span id="attachments-help" class="field-hint">
+                                    Max 5MB total • Multiple files supported
+                                </span>
+                            </div>
+                            
+                            <div class="beacon-actions" style="display:flex; gap: var(--space-3); align-items:center; flex-wrap:wrap;">
+                                <button type="submit" class="btn btn-primary" id="submit-btn">
+                                    <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                                    Send Email
+                                </button>
+                                <button type="button" class="btn btn-secondary" id="clear-draft-btn" aria-label="Clear saved draft">
+                                    <i class="fas fa-eraser" aria-hidden="true"></i>
+                                    Clear Draft
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </main>
+                <aside id="history-sidebar" class="history-sidebar" role="complementary" aria-label="Email history" hidden>
+                    <div class="history-sidebar-header">
+                        <h2><i class="fas fa-clock" aria-hidden="true"></i> Activity</h2>
+                        <button type="button" id="history-close" class="secondary-btn" aria-label="Close history"><i class="fas fa-times" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="history-sidebar-content" id="history-content">
+                        <!-- Dynamic history list -->
+                    </div>
+                    <div class="history-sidebar-footer">
+                        <button type="button" id="history-clear" class="secondary-btn" aria-label="Clear sent history"><i class="fas fa-trash" aria-hidden="true"></i> Clear Sent</button>
+                    </div>
+                </aside>
+        <footer role="contentinfo"><p>Beacon © <span id="current-year"></span> • Enterprise Email Platform</p></footer>
+    </div>
+    
+    <!-- Template manager removed per cleanup request -->
+    
+    <div class="toast-container" id="toast-container" role="status" aria-live="polite"></div>
+    <script src="/static/app.js" defer></script>
+    <noscript><div style="color:#fff;text-align:center;padding:1rem;font-size:0.8rem;">JavaScript required for Beacon interface.</div></noscript>
+</body>
+</html>
