@@ -1,44 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Beacon - Enterprise email delivery platform">
-    <meta name="theme-color" content="#0a0e1a">
-    <title>Beacon — Enterprise Email Platform</title>
-    
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/static/style.css">
-</head>
-<body>
-    <div class="star-field" id="star-field" aria-hidden="true"></div>
-    
-    <div class="container">
-        <header role="banner">
-            <div style="display: flex; align-items: center; gap: var(--space-3); justify-content: center;">
-                <i class="fas fa-satellite-dish" style="font-size: var(--text-3xl); color: var(--color-accent-primary);" aria-hidden="true"></i>
-                <h1>Beacon</h1>
+        <!-- History Sidebar -->
+        <aside id="history-sidebar" class="history-sidebar" role="complementary" aria-label="Email history" hidden>
+            <div class="history-sidebar-header">
+                <h2><i class="fas fa-clock" aria-hidden="true"></i> Activity</h2>
+                <button type="button" id="history-close" class="secondary-btn" aria-label="Close history">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
             </div>
-            <p class="subtitle">Enterprise Email Delivery Platform</p>
-        </header>
-        
-        <main class="surface" role="main">
-            <form id="email-form" novalidate>
-                <div class="beacon-layout">
-                    <!-- LEFT PANEL: Sender & Receiver -->
-                    <div class="beacon-left">
-                        <div class="beacon-section">
-                            <h3 class="beacon-section-title">
-                                <i class="fas fa-user-circle" aria-hidden="true"></i>
-                                Sender
-                            </h3>
-                            
-                            <div class="form-group">
-                                <label for="from-email">From Email</label>
-                                <input 
-                                    type="email" 
-                                    id="from-email" 
+            <div class="history-sidebar-content" id="history-content"><!-- Dynamic history list --></div>
+            <div class="history-sidebar-footer">
+                <button type="button" id="history-clear" class="secondary-btn" aria-label="Clear sent history">
+                    <i class="fas fa-trash" aria-hidden="true"></i> Clear Sent
+                </button>
+            </div>
+        </aside>
+        <footer role="contentinfo">
+            <p>Beacon © <span id="current-year"></span> • Enterprise Email Platform</p>
+        </footer>
+    </div>
+
+    <!-- Template Manager Modal -->
+    <div id="template-modal" class="modal" role="dialog" aria-labelledby="template-modal-title" aria-hidden="true" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="template-modal-title">
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Email Templates
+                </h2>
+                <button type="button" class="modal-close" aria-label="Close templates">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="template-list" class="template-list"><!-- Templates populated dynamically --></div>
+            </div>
+        </div>
+    </div>
                                     name="from_email" 
                                     placeholder="sender@company.com"
                                     aria-describedby="from-email-error">
@@ -149,11 +143,39 @@
                 </div>
             </form>
         </main>
-        
-        <footer role="contentinfo">
-            <p>Beacon © <span id="current-year"></span> • Enterprise Email Platform</p>
-        </footer>
+                <aside id="history-sidebar" class="history-sidebar" role="complementary" aria-label="Email history" hidden>
+                    <div class="history-sidebar-header">
+                        <h2><i class="fas fa-clock" aria-hidden="true"></i> Activity</h2>
+                        <button type="button" id="history-close" class="secondary-btn" aria-label="Close history"><i class="fas fa-times" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="history-sidebar-content" id="history-content">
+                        <!-- Dynamic history list -->
+                    </div>
+                    <div class="history-sidebar-footer">
+                        <button type="button" id="history-clear" class="secondary-btn" aria-label="Clear sent history"><i class="fas fa-trash" aria-hidden="true"></i> Clear Sent</button>
+                    </div>
+                </aside>
+        <footer role="contentinfo"><p>Beacon © <span id="current-year"></span> • Enterprise Email Platform</p></footer>
     </div>
+    
+    <!-- Template Manager Modal -->
+    <div id="template-modal" class="modal" role="dialog" aria-labelledby="template-modal-title" aria-hidden="true" hidden>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="template-modal-title">
+                    <i class="fas fa-folder-open" aria-hidden="true"></i> Email Templates
+                </h2>
+                <button type="button" class="modal-close" aria-label="Close templates">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="template-list" class="template-list">
+                    <!-- Templates populated dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Removed preview modal (unused / design cleanup) -->
     
     <div class="toast-container" id="toast-container" role="status" aria-live="polite"></div>
     <script src="/static/app.js" defer></script>
